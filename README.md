@@ -8,38 +8,60 @@ The environment variables must be modified before running the app
 
 Basic Structure of the project
 ```
-my_project/
-├── app/
-│   ├── main.py
-│   ├── api/
-│   │   ├── __init__.py
-│   │   └── controllers/
-│   │       ├── __init__.py
-│   │       └── items.py
-│   ├── core/
-│   │   ├── __init__.py
-│   │   └── config.py
-│   ├── models/
-│   │   ├── __init__.py
-│   │   └── item.py
-│   ├── schemas/
-│   │   ├── __init__.py
-│   │   └── item.py
-│   ├── crud/
-│   │   ├── __init__.py
-│   │   └── item.py
-│   ├── db/
-│   │   ├── __init__.py
-│   │   └── session.py
-│   └── tests/
-│       ├── __init__.py
-│       └── test_items.py
-├── .env
-├── .env.example
+.
+├── pyproject.toml        # single source of truth (deps, tools, scripts)
+├── README.md
+├── .env                  # local defaults; never commit secrets
+├── .pre-commit-config.yaml
 ├── .gitignore
-├── poetry.lock
-├── pyproject.toml
-└── README.md
+├── Dockerfile            # reproducible image
+├── scripts/              # one-shot helper scripts (DB seed, smoke-test…)
+│   └── load_demo_data.py
+├── alembic.ini           # if you use Alembic
+├── alembic/              # migrations
+├── tests/                # pytest & httpx tests (unit / integration / e2e)
+│   ├── conftest.py
+│   └── api/
+│       └── test_films.py
+└── src/                  # <— *src* layout prevents import shadowing
+    └── app/              # import path is `app.*`
+        ├── __init__.py
+        ├── main.py       # ASGI entry-point → `uvicorn app.main:app`
+        │
+        ├── core/         # cross-cutting stuff
+        │   ├── config.py         # Pydantic Settings / env parsing
+        │   ├── logging.py
+        │   └── security.py       # JWT utils, pwd hashing…
+        │
+        ├── db/                    # persistence layer
+        │   ├── __init__.py        # exposes `async_session`
+        │   ├── session.py         # engine & session factory
+        │   ├── models/            # SQLModel or SQLAlchemy ORM tables
+        │   │   └── film.py
+        │   └── repositories/      # thin CRUD wrappers (optional)
+        │       └── film.py
+        │
+        ├── api/                   # “outer” layer
+        │   ├── __init__.py
+        │   ├── deps.py            # FastAPI `Depends()` callables
+        │   ├── v1/                # versioned APIs
+        │   │   ├── __init__.py
+        │   │   ├── routers/       # `APIRouter`s, 1 per resource
+        │   │   │   └── films.py
+        │   │   └── schemas/       # Pydantic models ↔ API IO
+        │   │       ├── film.py
+        │   │       └── common.py
+        │   └── health.py          # /health, /metrics, …
+        │
+        ├── services/              # business logic (or “use-cases”)
+        │   └── film_service.py
+        │
+        ├── tasks/                 # background jobs (Celery, RQ…)
+        │   └── nightly_cleanup.py
+        │
+        └── utils/                 # small helpers, validators, etc.
+            └── exceptions.py
+
 ```
 ## How to get started
 ```bash

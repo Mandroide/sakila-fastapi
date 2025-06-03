@@ -2,17 +2,17 @@ from typing import Annotated
 
 from fastapi import APIRouter, Path, Query, status
 
-import app.crud.films as films_crud
-from app.db.engine import SessionDep
-from app.enums.common import Prefix, Tags
-from app.schemas.common import FilterParams
-from app.schemas.films import (
+import app.db.repositories.films as films_crud
+from app.api.v1.schemas.common import FilterParams
+from app.api.v1.schemas.films import (
     FilmCreateEntity,
     FilmFindAllResponse,
     FilmFindByIdResponse,
     FilmRemoveResponse,
     FilmUpdateEntity,
 )
+from app.db.engine import SessionDep
+from app.enums.common import Prefix, Tags
 
 FILM_NOT_FOUND_MESSAGE = "Film not found"
 

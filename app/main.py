@@ -14,9 +14,9 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.responses import Response
 
 from app.core.config import Settings
+from app.utils.exceptions import DefaultAPIResponse
 
-from .api.controllers import countries, films
-from .exceptions import DefaultAPIResponse
+from .api.v1.routers import countries, films
 
 app = FastAPI()
 app.include_router(countries.router, prefix="/api/v1")

@@ -1,6 +1,6 @@
 from fastapi import status
 
-from app.tests.conftest import client
+from tests.conftest import client
 
 
 def test_get_films() -> None:

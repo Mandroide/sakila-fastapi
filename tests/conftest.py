@@ -1,8 +1,7 @@
 from fastapi.testclient import TestClient
 
 from app.core.config import Settings
-
-from ..main import app, get_settings
+from app.main import app, get_settings
 
 
 def get_settings_override() -> Settings:

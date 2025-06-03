@@ -1,8 +1,7 @@
 from fastapi import HTTPException, status
 from sqlmodel import Session, func, select
 
-from app.models.film import FilmEntity
-from app.schemas.films import (
+from app.api.v1.schemas.films import (
     FilmCreateEntity,
     FilmFindAllResponse,
     FilmFindByIdResponse,
@@ -10,6 +9,7 @@ from app.schemas.films import (
     FilmRemoveResponse,
     FilmUpdateEntity,
 )
+from app.db.models.film import FilmEntity
 
 FILM_NOT_FOUND_MESSAGE = "Film not found"
 

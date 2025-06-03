@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from app.models.film import FilmBaseEntity
+from app.db.models.film import FilmBaseEntity
 
 
 class FilmPublicEntity(FilmBaseEntity):
