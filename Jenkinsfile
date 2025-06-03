@@ -29,7 +29,7 @@ pipeline {
 
     stage('Install Deps') {
       steps {
-        sh 'poetry install --no-interaction --no-ansi'
+        sh 'poetry install --no-interaction --no-ansi --no-root'
       }
     }
 
