@@ -1,5 +1,5 @@
 from fastapi import HTTPException, status
-from sqlmodel import Session, func, select
+from sqlmodel import Session, asc, func, select
 
 from app.api.v1.schemas.films import (
     FilmCreateEntity,
@@ -16,19 +16,29 @@ FILM_NOT_FOUND_MESSAGE = "Film not found"
 
 
 def get_films(page_size: int, page: int, session: Session) -> FilmFindAllResponse:
-    result = session.exec(select(func.count(FilmEntity.film_id)))
-    total_elements = result.one_or_none() or 0
+    total_elements: int | None = session.scalar(  # ① type now matches
+        select(func.count()).select_from(FilmEntity)
+    )
+    total_elements = total_elements or 0  # normalise for further maths
 
     total_pages = pagination.calculate_total_pages(page_size, total_elements)
     offset = pagination.calculate_offset(page, page_size)
-    films = session.exec(select(FilmEntity).limit(page_size).offset(offset)).all()
+    films = session.exec(
+        select(FilmEntity)
+        .limit(page_size)
+        .offset(offset)
+        .order_by(asc(FilmEntity.film_id))  # not "film_id"
+    ).all()
     films_list = [
         FilmPublicEntity(
             **f.model_dump(exclude={"special_features"}),
-            special_features=f.special_features.split(","),
+            special_features=(
+                (f.special_features or "").split(",") if f.special_features else []
+            ),
         )
         for f in films
     ]
+
     return FilmFindAllResponse(
         page=page,
         total_elements=total_elements,

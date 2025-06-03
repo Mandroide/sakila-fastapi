@@ -28,6 +28,6 @@ class FilmBaseEntity(SQLModel):
 
 class FilmEntity(FilmBaseEntity):
     __tablename__ = "film"
-    film_id: int | None = Field(default=None, primary_key=True)
+    film_id: int = Field(primary_key=True)
     last_update: datetime | None = None
     special_features: str | None = None

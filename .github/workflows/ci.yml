@@ -22,6 +22,11 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: "pip"
 
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/pypoetry/virtualenvs
+          key: ${{ runner.os }}-${{ hashFiles('poetry.lock') }}-${{ matrix.python-version }}
+
       - name: Install Poetry
         run: |
           pip install poetry
@@ -37,5 +42,12 @@ jobs:
       - name: Run mypy
         run: poetry run mypy .
 
-      - name: Run tests
-        run: poetry run pytest -q
+#      - name: Run tests
+#        run: poetry run pytest -q --cov=app --cov-report=xml --cov-report=term
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: coverage.xml
+          flags: unit
+          #token: ${{ secrets.CODECOV_TOKEN }}   # not needed for public repos

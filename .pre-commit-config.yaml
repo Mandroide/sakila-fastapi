@@ -2,9 +2,19 @@
 # Works with: Poetry >=1.7, Python 3.11 (adjust language_version if different)
 
 # By default run on commit and on pre-push; you can add stages as needed.
-default_stages: [ commit, push ]
+
+default_language_version:
+  python: python3.12
 
 repos:
+#  - repo: local
+#    hooks:
+#      - id: pytest
+#        name: Run the test-suite                 # ← add
+#        entry: poetry run pytest -q -n auto
+#        language: system
+#        stages: [ commit, push ]     # ‘parallel stage’
+
   # ――― Core whitespace & merge-conflict checks ―――
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0            # pin!
@@ -20,7 +30,6 @@ repos:
     rev: 25.1.0
     hooks:
       - id: black
-        language_version: python3.12        # keep in sync with Poetry's tool-poetry.dependencies.python
         args: [ "--fast" ]                    # drop if you prefer stable mode
 
   # ――― isort (imports) configured for Black style ―――
@@ -29,7 +38,6 @@ repos:
     hooks:
       - id: isort
         args: [ "--profile", "black" ]
-        language_version: python3.12          # keep in sync with Poetry’s python
 
   # ――― Ruff (linter & formatter) ―――
   - repo: https://github.com/astral-sh/ruff-pre-commit
@@ -39,29 +47,19 @@ repos:
       - id: ruff-check
         types_or: [ python, pyi ]
         args: [ "--fix" ]     # auto-fix where possible
-        # Ruff obeys pyproject.toml for rule sets / ignores
-      # Run the formatter.
-      - id: ruff-format
-        types_or: [ python, pyi ]
 
   # ――― Static typing with mypy ―――
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.16.0
+    rev: v1.10.1
     hooks:
       - id: mypy
         # Make the hook’s venv use the same interpreter Poetry declares
-        language_version: python3.12
         args: [ --strict, --ignore-missing-imports ]
         # Extra wheels the hook needs but that aren’t bundled:
         additional_dependencies:
-          # Stubs and runtime packages your FastAPI project relies on
-          - types-requests      # std HTTP client stubs
-          - types-ujson         # if you use ujson
           - fastapi             # runtime types for FastAPI
           - sqlmodel            #<-- THE MISSING PIECE
-          - sqlalchemy          # for Column/Session symbols
-          - sqlalchemy2-stubs
-          - pydantic            # (v2) runtime types
+          - sqlalchemy[mypy]
           - pydantic-settings   # if you use BaseSettings
 
   # ――― Secret scanning (opt-in but highly recommended) ―――
