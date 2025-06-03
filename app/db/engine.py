@@ -4,7 +4,7 @@ from fastapi import Depends
 from sqlalchemy import create_engine
 from sqlmodel import Session
 
-from app.config import Settings
+from app.core.config import Settings
 
 
 settings = Settings()

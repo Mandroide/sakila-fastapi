@@ -1,5 +1,5 @@
 from functools import lru_cache
-from typing import Annotated, Any, Coroutine
+from typing import Annotated
 
 from fastapi import FastAPI, Depends, status
 from fastapi.encoders import jsonable_encoder
@@ -8,17 +8,14 @@ from fastapi.responses import JSONResponse
 from fastapi.requests import Request
 from fastapi.exception_handlers import (
     http_exception_handler,
-    request_validation_exception_handler,
 )
 
-from .config import Settings
+from app.core.config import Settings
 from .exceptions import DefaultAPIResponse
-# from .dependencies import get_query_token
-from .routers import countries, films
+from .api.controllers import films, countries
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 app = FastAPI()
-# app = FastAPI(dependencies=[Depends(get_query_token)])
 app.include_router(
     countries.router,
     prefix="/api/v1"
