@@ -11,10 +11,11 @@ class DefaultAPIResponse(BaseModel):
     owner: str | None = None
     date: datetime.datetime = datetime.datetime.now()
 
+
 class NotFoundError(Exception):
     def __init__(self, name: str):
         self.__name = name
 
     @property
-    def name(self):
+    def name(self) -> str:
         return self.__name

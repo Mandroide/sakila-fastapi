@@ -1,0 +1,83 @@
+# .pre-commit-config.yaml
+# Works with: Poetry >=1.7, Python 3.11 (adjust language_version if different)
+
+# By default run on commit and on pre-push; you can add stages as needed.
+default_stages: [ commit, push ]
+
+repos:
+  # ――― Core whitespace & merge-conflict checks ―――
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0            # pin!
+    hooks:
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: check-added-large-files
+      - id: check-merge-conflict
+
+  # ――― Black code formatter ―――
+  - repo: https://github.com/psf/black
+    rev: 25.1.0
+    hooks:
+      - id: black
+        language_version: python3.12        # keep in sync with Poetry's tool-poetry.dependencies.python
+        args: [ "--fast" ]                    # drop if you prefer stable mode
+
+  # ――― isort (imports) configured for Black style ―――
+  - repo: https://github.com/PyCQA/isort
+    rev: 6.0.1
+    hooks:
+      - id: isort
+        args: [ "--profile", "black" ]
+        language_version: python3.12          # keep in sync with Poetry’s python
+
+  # ――― Ruff (linter & formatter) ―――
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.11.12
+    hooks:
+      # Run the linter.
+      - id: ruff-check
+        types_or: [ python, pyi ]
+        args: [ "--fix" ]     # auto-fix where possible
+        # Ruff obeys pyproject.toml for rule sets / ignores
+      # Run the formatter.
+      - id: ruff-format
+        types_or: [ python, pyi ]
+
+  # ――― Static typing with mypy ―――
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.16.0
+    hooks:
+      - id: mypy
+        # Make the hook’s venv use the same interpreter Poetry declares
+        language_version: python3.12
+        args: [ --strict, --ignore-missing-imports ]
+        # Extra wheels the hook needs but that aren’t bundled:
+        additional_dependencies:
+          # Stubs and runtime packages your FastAPI project relies on
+          - types-requests      # std HTTP client stubs
+          - types-ujson         # if you use ujson
+          - fastapi             # runtime types for FastAPI
+          - sqlmodel            #<-- THE MISSING PIECE
+          - sqlalchemy          # for Column/Session symbols
+          - sqlalchemy2-stubs
+          - pydantic            # (v2) runtime types
+          - pydantic-settings   # if you use BaseSettings
+
+  # ――― Secret scanning (opt-in but highly recommended) ―――
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+      - id: detect-secrets
+        # To ignore known false-positives, run:
+        #   detect-secrets scan > .secrets.baseline
+        # …and commit .secrets.baseline
+        #args: [ "--baseline", ".secrets.baseline" ]   # ← here
+        exclude: package.lock.json
+
+  # ――― Conventional commit-message linting (optional) ―――
+  - repo: https://github.com/jorisroovers/gitlint
+    rev: v0.19.1
+    hooks:
+      - id: gitlint
+        stages: [ commit-msg ]     # runs only on commit messages

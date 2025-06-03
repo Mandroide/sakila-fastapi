@@ -41,4 +41,12 @@ my_project/
 ├── pyproject.toml
 └── README.md
 ```
-Reference: [Structuring FastAPI Projects: Best Practices for Clean and Scalable Code](https://medium.com/@agusabdulrahman/structuring-fastapi-projects-best-practices-for-clean-and-scalable-code-a993b297ea3a)
+## How to get started
+```bash
+poetry run pre-commit install --hook-type pre-commit --hook-type pre-push --hook-type commit-msg
+```
+
+## References
+- [FastAPI](https://fastapi.tiangolo.com/)
+- [Structuring FastAPI Projects: Best Practices for Clean and Scalable Code](https://medium.com/@agusabdulrahman/structuring-fastapi-projects-best-practices-for-clean-and-scalable-code-a993b297ea3a)
+- [Microservices with FastAPI and poetry project management](https://tomasgis.com/microservices-with-fastapi-and-poetry-project-management-4c2c49f0fdda)
