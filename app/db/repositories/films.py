@@ -10,6 +10,7 @@ from app.api.v1.schemas.films import (
     FilmUpdateEntity,
 )
 from app.db.models.film import FilmEntity
+from app.utils import pagination
 
 FILM_NOT_FOUND_MESSAGE = "Film not found"
 
@@ -18,8 +19,8 @@ def get_films(page_size: int, page: int, session: Session) -> FilmFindAllRespons
     result = session.exec(select(func.count(FilmEntity.film_id)))
     total_elements = result.one_or_none() or 0
 
-    total_pages = (total_elements + page_size - 1) // page_size
-    offset = page * page_size
+    total_pages = pagination.calculate_total_pages(page_size, total_elements)
+    offset = pagination.calculate_offset(page, page_size)
     films = session.exec(select(FilmEntity).limit(page_size).offset(offset)).all()
     films_list = [
         FilmPublicEntity(
