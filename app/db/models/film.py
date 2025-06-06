@@ -26,7 +26,7 @@ class FilmBaseEntity(SQLModel):
     )
 
 
-class FilmEntity(FilmBaseEntity):
+class FilmEntity(FilmBaseEntity, table=True):
     __tablename__ = "film"
     film_id: int = Field(primary_key=True)
     last_update: datetime | None = None
